@@ -1,0 +1,26 @@
+---
+- name: Check if MariaDB is installed
+  stat: path=/etc/init.d/mysql
+  register: mariadb_installed
+
+- name: Add Percona key
+  apt_key:
+    keyserver: keys.gnupg.net
+    id: 9334A25F8507EFA5
+
+- name: Add Percona repository
+  apt_repository: repo="deb http://repo.percona.com/apt jessie main" state=present update-cache=yes
+
+- name: Install packages
+  apt: name={{ item }} state=present
+  with_items:
+    - mariadb-server
+    - mariadb-client
+    - python-mysqldb
+    - percona-xtrabackup
+    - percona-toolkit
+  tags: mariadb
+
+- name: Enable mariadb service and start it
+  service: name=mysql state=stopped
+  when: mariadb_installed.stat.exists == true
