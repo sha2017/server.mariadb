@@ -22,5 +22,5 @@
   tags: mariadb
 
 - name: Enable mariadb service and start it
-  service: name=mysql state=stopped
+  service: name=mysql state=started
   when: mariadb_installed.stat.exists == true
